@@ -1,0 +1,23 @@
+services:
+  mongodb:
+    image: "mongo"
+
+  ludoclient:
+    build:
+      context: ./ludoClient
+      dockerfile: Dockerfile
+    ports: 
+      - "3000:3000"
+    volumes:
+      - /src/app/ludo/node_modules
+      - ./ludoclient:/src/app/ludo  
+
+  ludoserver:
+    build:
+      context: ./ludoserver
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - /src/app/ludoserver/node_modules
+      - ./ludoserver:/src/app/ludoserver  

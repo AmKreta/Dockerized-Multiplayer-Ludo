@@ -7,6 +7,9 @@ app.use(cors());
 const http = require('http');
 const server = http.Server(app);
 
+const connectDB = require('./connectDB');
+connectDB('ludo');
+
 app.get('/amk', (req, res) => {
     res.status(200).json({ message: 'amk loves neha' });
 });

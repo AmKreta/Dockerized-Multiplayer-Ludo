@@ -27,7 +27,7 @@ module.exports.generateToken = async (req, res, next) => {
         res.status(200).json({ sucess: true, payload: { accessToken, refreshToken } });
     }
     catch (error) {
-        next({ error, statusCode: error.statusCode || 409 });
+        next({ error: error.message, statusCode: error.statusCode || 409 });
     }
 }
 
@@ -40,13 +40,13 @@ module.exports.generateToken = async (req, res, next) => {
 */
 module.exports.verifyToken = async (req, res, next) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.query;
         if (!userId)
-            throw new Error('userId not found in request body');
+            throw new Error('userId not found in query params');
         const bearer = req.header['Authorization'];
         if (!bearer)
             throw new Error('token not found add an access token in req.header["Authorization"]', 403);
-        const grantedTokenObj = grantedToken.find({ userId });
+        const grantedTokenObj = await grantedToken.findOne({ userId });
         if (!grantedTokenObj)
             throw new Error(`No token found with id ${userId}`);
         const accessToken = bearer.split(' ')[1];
@@ -59,8 +59,8 @@ module.exports.verifyToken = async (req, res, next) => {
             res.status(200).json({ success: true, payload: { message: 'Access token verified' } });
         });
     }
-    catch (err) {
-        next({ error, statusCode: error.statusCode || 409 });
+    catch (error) {
+        next({ error: error.message, statusCode: error.statusCode || 409 });
     }
 }
 
@@ -73,7 +73,13 @@ module.exports.verifyToken = async (req, res, next) => {
 */
 module.exports.reassignToken = async (req, res, next) => {
     try {
-
+        const { userId, refreshToken } = req.body;
+        if (!userId)
+            throw new Err('userId not found in requset body');
+        if (!refreshToken)
+            throw new Err('Refresh token not found in body');
+        const accessToken = req.header['Authorization'].split(' ')[1];
+        const tokens = await grantedToken.findOne({ userId, refreshToken });
     }
     catch (err) {
 
@@ -95,7 +101,7 @@ module.exports.deleteToken = async (req, res, next) => {
         await grantedToken.deleteOne({ userId });
         res.status(204).json({ success: true, payload: { message: `token for ${userId} deleted successfully` } });
     }
-    catch (err) {
-        next({ error, statusCode: 409 });
+    catch (error) {
+        next({ error: error.message, statusCode: 409 });
     }
 }

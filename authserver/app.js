@@ -4,6 +4,23 @@ const app = express();
 const http = require('http');
 const server = http.Server(app);
 
+// appling cors here
+const cors = require('cors');
+app.use(cors());
+
+// adding routes here
+const Router = require('./route/routes');
+app.use(Router);
+
+// handling routes error here
+const errorHandler = require('./util/errorHandler.middleware');
+app.use(errorHandler)
+
+//connecting to db here
+const connectDB = require('./connectDB');
+connectDB('ludoAuth');
+
+//starting server here
 server.listen('8080', () => {
     console.log('Auth server up and running on port 8080');
 });

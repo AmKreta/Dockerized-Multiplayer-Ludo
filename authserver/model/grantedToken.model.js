@@ -16,4 +16,4 @@ const grantedTokenSchema = new mongoose.Schema({
     lastIssuedAccessToken: String
 });
 
-module.exports = grantedTokenSchema;
+module.exports = mongoose.model('grantedSchema', grantedTokenSchema);

@@ -1,7 +1,8 @@
 class Err extends Error {
-    constructor(message, statusCode) {
-        this.message = message;
+    constructor(message, statusCode, code) {
+        super(message);
         this.statusCode = statusCode;
+        this.code = code;
     }
 }
 

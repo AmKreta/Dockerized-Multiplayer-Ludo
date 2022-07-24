@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const grantedTokenSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: ['true', 'UserId is required for generating token']
     },
     accessTokenSecret: {
@@ -14,6 +14,6 @@ const grantedTokenSchema = new mongoose.Schema({
         required: ['true', 'refresh token secret is required to generate token']
     },
     lastIssuedAccessToken: String
-});
+}, { timestamps: true });
 
-module.exports = mongoose.model('grantedSchema', grantedTokenSchema);
+module.exports = mongoose.model('grantedToken', grantedTokenSchema);

@@ -7,6 +7,7 @@ const server = http.Server(app);
 // appling cors here
 const cors = require('cors');
 app.use(cors());
+app.use(express.json())
 
 // adding routes here
 const Router = require('./route/routes');

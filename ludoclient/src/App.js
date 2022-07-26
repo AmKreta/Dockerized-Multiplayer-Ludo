@@ -1,4 +1,4 @@
-import LudoBoard from './pages/LudoBoard/ludoBoard.component';
+import LudoBoard from './pages/ludoBoard.component';
 
 function App() {
   return (

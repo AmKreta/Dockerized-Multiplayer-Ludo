@@ -15,9 +15,14 @@ code {
 *{
   margin:0;
   padding:0;
-  box-sizing:0;
+  box-sizing:border-box;
 }
 
 html,body,#root{
   height:100%;
+}
+
+:root{
+  --ludoBorderWidth:1px;
+  --ludoBorder:var(--ludoBorderWidth) solid black;
 }

@@ -31,8 +31,8 @@ const Container = styled("div")((props) => ({
     alignContent: "space-evenly",
     flexWrap: "wrap",
     "&>.pawnContainer": {
-      height: "35%",
-      width: "35%",
+      height: "33.5%",
+      width: "33.5%",
       backgroundColor: `var(--${props.color})`,
       borderRadius: "50%",
       border: "var(--ludoBorder)",

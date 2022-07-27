@@ -17,9 +17,10 @@ const LudoBoardDestination = () => {
 const Container = styled("div")((props) => ({
   gridArea: "destination",
   overflow: "hidden",
+  border: "var(--ludoBorder)",
   "&>.triangleContainer": {
-    height: "200%",
-    width: "200%",
+    height: "150%",
+    width: "150%",
     display: "flex",
     flexWrap: "wrap",
     position: "relative",
@@ -29,11 +30,12 @@ const Container = styled("div")((props) => ({
     "&>div": {
       height: "50%",
       width: "50%",
+      border: "var(--ludoBorder)",
     },
-    "&>div:nth-child(1)": { backgroundColor: "red" },
-    "&>div:nth-child(2)": { backgroundColor: "green" },
-    "&>div:nth-child(4)": { backgroundColor: "yellow" },
-    "&>div:nth-child(3)": { backgroundColor: "blue" },
+    "&>div:nth-child(1)": { backgroundColor: "var(--red)" },
+    "&>div:nth-child(2)": { backgroundColor: "var(--green)" },
+    "&>div:nth-child(4)": { backgroundColor: "var(--yellow)" },
+    "&>div:nth-child(3)": { backgroundColor: "var(--blue)" },
   },
 }));
 

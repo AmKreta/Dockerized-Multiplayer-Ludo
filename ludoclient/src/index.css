@@ -23,6 +23,10 @@ html,body,#root{
 }
 
 :root{
-  --ludoBorderWidth:1px;
-  --ludoBorder:var(--ludoBorderWidth) solid black;
+  --ludoBorderWidth:.5px;
+  --ludoBorder:var(--ludoBorderWidth) solid #000;
+  --red:#de3939;
+  --blue:#2299d5;
+  --yellow:#FFCC00;
+  --green: #009900;
 }

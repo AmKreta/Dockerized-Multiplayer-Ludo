@@ -16,7 +16,7 @@ const LudoBoardHome = ({ color }) => {
 
 const Container = styled("div")((props) => ({
   gridArea: `${props.color}_home`,
-  backgroundColor: props.color,
+  backgroundColor: `var(--${props.color})`,
   padding: "16.66%",
   border: "var(--ludoBorder)",
   "&>.pawnContainerHome": {
@@ -24,7 +24,7 @@ const Container = styled("div")((props) => ({
     width: "100%",
     backgroundColor: "white",
     border: "var(--ludoBorder)",
-    borderWidth: "2px",
+    borderWidth: "calc(var(--ludoBorderWidth) * 2)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-evenly",
@@ -33,10 +33,10 @@ const Container = styled("div")((props) => ({
     "&>.pawnContainer": {
       height: "35%",
       width: "35%",
-      backgroundColor: props.color,
+      backgroundColor: `var(--${props.color})`,
       borderRadius: "50%",
       border: "var(--ludoBorder)",
-      borderWidth: "2px",
+      borderWidth: "calc(var(--ludoBorderWidth) * 2)",
     },
   },
 }));

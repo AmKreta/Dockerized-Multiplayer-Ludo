@@ -28,10 +28,10 @@ const LudoBoardContainer = styled("section")(({ theme }) => ({
   justifyContent: "center",
   height: "100%",
   "&>.ludoBoard": {
-    border: "var(--ludoBorder)",
+    //border: "var(--ludoBorder)",
     height: "90%",
     aspectRatio: "1 / 1",
-    boxShadow: "0 0 5px #ccc",
+    boxShadow: "0 0 5px #888",
     display: "grid",
     gridTemplateRows: "2fr 1fr 2fr",
     gridTemplateColumns: "2fr 1fr 2fr",

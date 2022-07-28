@@ -1,7 +1,9 @@
-import LudoBoard from './pages/ludoBoard.component';
+//import Auth from './pages/auth.component';
+import LudoBoard from "./pages/ludoBoard.component";
 
 function App() {
   return (
+    //<Auth />
     <LudoBoard />
   );
 }

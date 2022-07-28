@@ -8,10 +8,9 @@ const LudoBoard = function () {
   return (
     <LudoBoardContainer>
       <div className="ludoBoard">
-        <LudoBoardHome color="red" />
-        <LudoBoardHome color="blue" />
-        <LudoBoardHome color="yellow" />
-        <LudoBoardHome color="green" />
+        {["red", "blue", "yellow", "green"].map((item) => (
+          <LudoBoardHome color={item} key={item} />
+        ))}
         <LudoBoardDestination />
         <LudoSteps color={"green"} />
         <LudoSteps color={"blue"} />

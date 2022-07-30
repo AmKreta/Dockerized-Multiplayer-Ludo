@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
-import { authBg } from "../services/services";
+import { authBg } from "../assets/assets";
 
 const Auth = () => {
   const [username, setUsername] = useState("");

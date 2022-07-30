@@ -1,21 +1,25 @@
 import React, { useMemo } from "react";
 import { styled } from "@mui/material/styles";
-import colouredSteps from "../util/colouredSteps";
-import protectedSteps from "../util/protectedSteps";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import { useSelector } from "react-redux";
 
-const LudoSteps = ({ color, inverted }) => {
+const LudoSteps = ({ color, inverted, stepStartIndex }) => {
+  const { colouredSteps, starredSteps } = useSelector((state) => ({
+    colouredSteps: state.game?.colouredSteps?.[color],
+    starredSteps: state?.game?.starredSteps,
+  }));
+
   const steps = useMemo(() => {
     let i, j;
     i = inverted ? 6 : 3;
     j = inverted ? 3 : 6;
     const steps = [];
-    let stepIndex = 0;
+    let stepIndex = stepStartIndex;
     for (let x = 0; x < i; x++) {
       const temp = [];
       for (let y = 0; y < j; y++) {
-        const isColoured = colouredSteps[color].has(stepIndex);
-        const isSafeZone = protectedSteps[color];
+        const isColoured = colouredSteps.has(stepIndex);
+        const isSafeZone = starredSteps[color];
         temp.push(
           <div
             className={`step ${isColoured ? "coloured" : null}`}
@@ -34,7 +38,8 @@ const LudoSteps = ({ color, inverted }) => {
       steps.push(temp);
     }
     return steps;
-  }, []);
+  }, [colouredSteps, starredSteps]);
+
   return (
     <Container color={color} inverted={inverted}>
       {steps}

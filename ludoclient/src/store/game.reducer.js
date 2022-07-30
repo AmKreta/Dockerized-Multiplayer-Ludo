@@ -9,6 +9,15 @@ const initialState = {
         blue: new Set([]),
         yellow: new Set([]),
         green: new Set([])
+    },
+    pawns: {
+
+    },
+    gameId: {
+
+    },
+    members: {
+
     }
 };
 

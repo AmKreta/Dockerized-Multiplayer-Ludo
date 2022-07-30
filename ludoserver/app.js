@@ -16,6 +16,16 @@ connectDB('ludo');
 const Routes = require('./routes/index');
 app.use('/api', Routes);
 
+//init socket.io
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+        methods: ["GET", "POST"]
+    }
+});
+const socketHandler = require('./sockerHandler/socketHandler');
+socketHandler(io);
+
 server.listen(8000, () => {
     console.log('server listening on port 8000');
 });

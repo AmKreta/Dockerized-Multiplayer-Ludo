@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
+import { useRef } from "react";
+import { useDispatch } from "react-redux";
+import { mapHomeCoordinates } from "../store/game.reducer";
+import getMidPoint from "../util/getMidPoint";
 
 const LudoBoardHome = ({ color }) => {
+  const ref = useRef(null);
+  const dispatch = useDispatch();
+  useLayoutEffect(() => {
+    const timeout = setTimeout(function () {
+      const home = ref.current.children[0].children;
+      const midPointsOfCircles = [];
+      for (let i = 0; i < home.length; i++)
+        midPointsOfCircles.push(getMidPoint(home[i].getBoundingClientRect()));
+      dispatch(mapHomeCoordinates({ color, positions: midPointsOfCircles }));
+      clearTimeout(timeout);
+    }, 10);
+  }, []);
   return (
-    <Container color={color} data-color={color}>
+    <Container color={color} data-color={color} ref={ref}>
       <div className="pawnContainerHome">
         <div className="pawnContainer"></div>
         <div className="pawnContainer"></div>

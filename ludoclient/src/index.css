@@ -25,8 +25,22 @@ html,body,#root{
 :root{
   --ludoBorderWidth:.5px;
   --ludoBorder:var(--ludoBorderWidth) solid #000;
-  --red:#de3939;
+  --red:#e04c4c;
   --blue:#2299d5;
   --yellow:#FFCC00;
   --green: #009900;
+}
+
+.rotationAnimation{
+  animation-name: rotate3d;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-direction: normal;
+  animation-timing-function: linear;
+}
+
+@keyframes rotate3d {
+  from {transform: rotate3d(0,0,0,0deg)}
+  to {transform: rotate3d(1,1,1,720deg)}
 }

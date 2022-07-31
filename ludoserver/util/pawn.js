@@ -1,11 +1,7 @@
-const { pawnPath } = require("./gameMapInfo");
-
 class Pawn {
-    constructor(color) {
-        this.color = color;
-        this.path = pawnPath[this.color];
-        this.stepIndex = 0;
-        this.isFree = false;
+
+    constructor() {
+        this.stepIndex = -1;
     }
 
     moveForward(steps, onMoveForward, onFinishMoving) {
@@ -38,8 +34,7 @@ class Pawn {
     }
 
     kill() {
-        this.isFree = false;
-        this.stepIndex = 0;
+        this.stepIndex = -1;
     }
 }
 

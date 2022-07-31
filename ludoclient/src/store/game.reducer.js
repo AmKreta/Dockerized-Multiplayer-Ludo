@@ -13,12 +13,31 @@ const initialState = {
     pawns: {
 
     },
-    gameId: {
-
-    },
+    gameroomId: null,
     members: {
 
-    }
+    },
+    positionMap: {
+        setting: false,
+        steps: {
+            //step_index-coordinates
+        },
+        home: {
+            // id-coordinate
+            red: {},
+            blue: {},
+            yellow: {},
+            green: {}
+        },
+        destination: {
+            // id-coordinate
+            red: {},
+            blue: {},
+            yellow: {},
+            green: {}
+        }
+    },
+    dieLoced: true
 };
 
 export const fetchGameMapDetails = createAsyncThunk('game/fetchGameMapDetails', async () => {
@@ -29,10 +48,28 @@ export const fetchGameMapDetails = createAsyncThunk('game/fetchGameMapDetails', 
 const game = createSlice({
     name: 'game',
     initialState,
-    setGameMap(state, action) {
-        state.starredSteps = {};
-        state.colouredSteps = new Set(action.colouredSteps);
-        return state;
+    reducers: {
+        setGameRoomId(state, action) {
+            state.gameroomId = action.payload;
+            return state;
+        },
+        setInitialPawnsPosition(state, action) {
+            state.pawns = action.payload;
+            return state;
+        },
+        mapHomeCoordinates(state, action) {
+            const { color, positions } = action.payload;
+            const pawns = state.pawns[color];
+            Object.keys(pawns).forEach((pawnId, index) => {
+                state.positionMap.home[pawnId] = positions[index];
+            });
+            return state;
+        },
+        mapStepsCoordinates(state, action) {
+            const stepMap = action.payload;
+            Object.assign(state.positionMap.steps, stepMap);
+            return state;
+        }
     },
     extraReducers: {
         [fetchGameMapDetails.fulfilled](state, action) {
@@ -48,5 +85,5 @@ const game = createSlice({
     }
 });
 
-export const { setGameMap } = game.actions;
+export const { setGameMap, setInitialPawnsPosition, setGameRoomId, mapHomeCoordinates, mapStepsCoordinates } = game.actions;
 export default game.reducer;

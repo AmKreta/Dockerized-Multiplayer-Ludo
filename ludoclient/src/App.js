@@ -16,9 +16,8 @@ function App() {
   }, []);
 
   useEffect(function () {
-    if (socket) {
-      socket.on('connected', (data) => console.log(data))
-    }
+    socket?.on('connected', (data) => { });
+    return () => socket?.off('connected')
   }, [socket]);
 
   return (

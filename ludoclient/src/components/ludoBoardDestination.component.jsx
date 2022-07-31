@@ -1,5 +1,6 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
+import Dice from "./dice.component";
 
 const LudoBoardDestination = () => {
   return (
@@ -9,6 +10,9 @@ const LudoBoardDestination = () => {
         <div></div>
         <div></div>
         <div></div>
+        <div className="diceContainer">
+          <Dice />
+        </div>
       </div>
     </Container>
   );
@@ -32,10 +36,17 @@ const Container = styled("div")((props) => ({
       width: "50%",
       border: "var(--ludoBorder)",
     },
-    "&>div:nth-child(1)": { backgroundColor: "var(--red)" },
-    "&>div:nth-child(2)": { backgroundColor: "var(--green)" },
-    "&>div:nth-child(4)": { backgroundColor: "var(--yellow)" },
-    "&>div:nth-child(3)": { backgroundColor: "var(--blue)" },
+    "&>div:nth-of-type(1)": { backgroundColor: "var(--red)" },
+    "&>div:nth-of-type(2)": { backgroundColor: "var(--green)" },
+    "&>div:nth-of-type(4)": { backgroundColor: "var(--yellow)" },
+    "&>div:nth-of-type(3)": { backgroundColor: "var(--blue)" },
+    "&>.diceContainer": {
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-25%,-25%)",
+      border: "none",
+    },
   },
 }));
 

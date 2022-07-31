@@ -1,13 +1,31 @@
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import getMidPoint from "../util/getMidPoint";
+import { mapStepsCoordinates } from "../store/game.reducer";
 
 const LudoSteps = ({ color, inverted, stepStartIndex }) => {
   const { colouredSteps, starredSteps } = useSelector((state) => ({
     colouredSteps: state.game?.colouredSteps?.[color],
     starredSteps: state?.game?.starredSteps,
   }));
+  const dispatch = useDispatch();
+
+  useLayoutEffect(function () {
+    const timeout = setTimeout(function () {
+      const steps = ref.current.children;
+      const stepsMidPoint = {};
+      for (let i = 0; i < steps.length; i++)
+        stepsMidPoint[stepStartIndex + i] = getMidPoint(
+          steps[i].getBoundingClientRect()
+        );
+      dispatch(mapStepsCoordinates(stepsMidPoint));
+      clearTimeout(timeout);
+    });
+  }, []);
+
+  const ref = useRef(null);
 
   const steps = useMemo(() => {
     let i, j;
@@ -41,7 +59,7 @@ const LudoSteps = ({ color, inverted, stepStartIndex }) => {
   }, [colouredSteps, starredSteps]);
 
   return (
-    <Container color={color} inverted={inverted}>
+    <Container color={color} inverted={inverted} ref={ref}>
       {steps}
     </Container>
   );

@@ -44,4 +44,4 @@ const LudoBoardContainer = styled("section")(({ theme }) => ({
   },
 }));
 
-export default LudoBoard;
+export default React.memo(LudoBoard);

@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { styled } from "@mui/material/styles";
 import { useEffect } from "react";
+import useSocket from "../socket/useSocket";
+import { useParams } from "react-router-dom";
 
 const Face1 = () => {
   return (
@@ -62,20 +64,25 @@ const Face6 = () => {
 
 const Dice = () => {
   const [isRotating, setIsRotating] = useState(false);
-  const timerRef = useRef(null);
+  const [diceResult, setDiceResult] = useState(-1);
+  const socket = useSocket();
+  const { roomId } = useParams();
 
-  useEffect(function () {
-    return () => clearTimeout(timerRef?.current);
-  }, []);
+  useEffect(
+    function () {
+      socket?.on("rollADiceResult", (result) => {
+        setIsRotating(false);
+        setDiceResult(result);
+      });
+      return () => socket?.off("rollADiceResult");
+    },
+    [socket]
+  );
 
   const rotate = () => {
-    if (!timerRef.current) {
+    if (!isRotating) {
       setIsRotating(true);
-      timerRef.current = setTimeout(() => {
-        setIsRotating(false);
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }, 1000);
+      //socket.emit("rollADice", roomId);
     }
   };
 

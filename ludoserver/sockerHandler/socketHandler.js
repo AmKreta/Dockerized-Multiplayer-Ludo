@@ -20,7 +20,7 @@ module.exports = (io) => {
 
         socket.on('startGame', roomId => {
             const membersInRoom = [...(io.sockets.adapter.rooms.get(roomId))];
-            gameList[roomId] = new Game({ playersId: membersInRoom });
+            gameList[roomId] = new Game({ playersId: membersInRoom, ctx: { io, socket } });
             const pawnsInfo = {};
             Object.keys(gameList[roomId].players).forEach(playerId => {
                 const player = gameList[roomId].players[playerId];
@@ -29,9 +29,21 @@ module.exports = (io) => {
             socket.emit('gameStarted', { pawnsInfo })
         });
 
-        socket.on('dieRolled', (roomId) => {
+        socket.on('rollADice', (roomId) => {
+            socket.to(roomId).emit('rollADice');
+            const result = gameList[roomId].rollADice();
+            io.to(roomId).emit('rollADiceResult', result);
+            const pawnId = gameList[roomId].shouldCurrentPlayerMoveAutomatically();
+            if (pawnId) {
+                const [pathTravelledArray, killedPawnId] = gameList[roomId].moveForward(pawnId);
+                socket.emit('movePawn', [pathTravelledArray, killedPawnId]);
+            }
+        });
 
-        })
+        socket.on('pawnSelectedToMoved', (pawnId) => {
+            const [pathTravelledArray, killedPawnId] = gameList[roomId].moveForward(pawnId);
+            socket.to(roomId).emit('movePawn', [pathTravelledArray, killedPawnId]);
+        });
     })
 
 

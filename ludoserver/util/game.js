@@ -1,8 +1,9 @@
 const generateId = require("./generateId");
+const getRandomNoBetween = require("./getRandomNoBetween");
 const Player = require("./player");
 
 class Game {
-    constructor({ playersId = [], socketInstance }) {
+    constructor({ playersId = [], ctx }) {
         this.players = {
             [playersId[0]]: new Player('red'),
             [playersId[1] || generateId()]: new Player('green', !!playersId[1]),
@@ -10,6 +11,7 @@ class Game {
             [playersId[3] || generateId()]: new Player('blue', !!playersId[3]),
         };
         this.activePlayerIndex = 0;
+        this.diceResult = 0;
     }
 
     getRandomNo(start = 1, end = 6) {
@@ -22,21 +24,43 @@ class Game {
             : this.activePlayerIndex + 1;
     }
 
-    rollADie() {
-        const dieResult = this.getRandomNo();
-        const currentPlayer = this.players[this.activePlayerIndex];
-        if (currentPlayer.isBot) {
-            const freePawnIds = Object.keys(currentPlayer.freepawns);
-            if (freePawnIds.length) {
-                const tappedPawnIndex = this.getRandomNo(0, freePawnIds.length - 1);
-                const tappedPawnId = freePawnIds[tappedPawnIndex];
-                currentPlayer.moveForward(tappedPawnId, dieResult);
-            }
-            else if (dieResult === 6) {
-                currentPlayer.freeAPawn();
+    get currentPlayer() {
+        return this.players[this.activePlayerIndex];
+    }
+
+    rollADice() {
+        const diceResult = getRandomNoBetween(1, 6);
+        this.diceResult = diceResult;
+        return diceResult;
+    }
+
+    isCurrentPlayerBot() {
+        return this.currentPlayer.isBot;
+    }
+
+    shouldCurrentPlayerMoveAutomatically() {
+        return this.currentPlayer.shouldMoveAutomatically(this.diceResult);
+    }
+
+    collisionDetection(stepIndex) {
+        for (let i = 0; i < 4; i++) {
+            if (i != this.activePlayerIndex) {
+                const pawnId = this.players[i].checkIfAnyPawnCanDie(stepIndex);
+                return { playerIndex: i, pawnId };
             }
         }
-        this.setNextActivePlayer();
+    }
+
+    moveForward(pawnId) {
+        // contains all the indexes that the pawn will hop on
+        const pathTravelledArray = this.currentPlayer.moveForward(pawnId, this.diceResult);
+        const lastElement = pathTravelledArray.at(-1);
+        let killedpawnId;
+        if (lastElement != 100)
+            killedPawnDetails = this.collisionDetection(pathTravelledArray.at(-1));
+        if (!(killedpawnId || this.diceResult === 6))
+            this.setNextActivePlayer();
+        return { pathTravelledArray, killedpawnId };
     }
 
     endGame() {

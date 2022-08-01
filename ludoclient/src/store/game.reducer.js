@@ -10,13 +10,9 @@ const initialState = {
         yellow: new Set([]),
         green: new Set([])
     },
-    pawns: {
-
-    },
+    pawns: {},
     gameroomId: null,
-    members: {
-
-    },
+    members: {},
     positionMap: {
         setting: false,
         steps: {
@@ -37,7 +33,8 @@ const initialState = {
             green: {}
         }
     },
-    dieLoced: true
+    dieLoced: true,
+    diceTopFace: 6
 };
 
 export const fetchGameMapDetails = createAsyncThunk('game/fetchGameMapDetails', async () => {

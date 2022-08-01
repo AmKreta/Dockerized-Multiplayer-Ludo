@@ -6,7 +6,6 @@ import useSocket from "../socket/useSocket";
 import { useDispatch } from "react-redux";
 import { setGameRoomId } from "../store/game.reducer";
 import { ROUTES_OBJ } from "../router/router.component";
-import Dice from "../components/dice.component";
 
 const Home = () => {
   const navigate = useNavigate();

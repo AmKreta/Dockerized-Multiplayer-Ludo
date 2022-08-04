@@ -66,6 +66,11 @@ const game = createSlice({
             const stepMap = action.payload;
             Object.assign(state.positionMap.steps, stepMap);
             return state;
+        },
+        movePawn(state, action) {
+            const { pawnId, stepIndex, movedPawnColor } = action.payload;
+            state.pawns[movedPawnColor][pawnId] = stepIndex;
+            return state;
         }
     },
     extraReducers: {
@@ -82,5 +87,12 @@ const game = createSlice({
     }
 });
 
-export const { setGameMap, setInitialPawnsPosition, setGameRoomId, mapHomeCoordinates, mapStepsCoordinates } = game.actions;
+export const {
+    setGameMap,
+    setInitialPawnsPosition,
+    setGameRoomId,
+    mapHomeCoordinates,
+    mapStepsCoordinates,
+    movePawn
+} = game.actions;
 export default game.reducer;

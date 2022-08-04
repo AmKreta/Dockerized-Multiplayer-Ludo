@@ -10,26 +10,22 @@ class Game {
             [playersId[2] || generateId()]: new Player('yellow', !!playersId[2]),
             [playersId[3] || generateId()]: new Player('blue', !!playersId[3]),
         };
-        this.activePlayerIndex = 0;
+        this.playerIds = Object.keys(this.players);
+        this.activePlayerId = playersId[0];
         this.diceResult = 0;
     }
 
-    getRandomNo(start = 1, end = 6) {
-        return Math.floor(Math.random() * (end - start + 1) + start);
-    }
-
-    setNextActivePlayer() {
-        this.activePlayerIndex = this.activePlayerIndex === 3
-            ? 0
-            : this.activePlayerIndex + 1;
+    setNextActivePlayer(player_Id) {
+        let res = this.playerIds.findIndex(id => id === player_Id);
+        this.activePlayerId = res === 3 ? this.playerIds[0] : this.playerIds[res + 1];
     }
 
     get currentPlayer() {
-        return this.players[this.activePlayerIndex];
+        return this.players[this.activePlayerId];
     }
 
     rollADice() {
-        const diceResult = getRandomNoBetween(1, 6);
+        const diceResult = 6;//getRandomNoBetween(1, 6);
         this.diceResult = diceResult;
         return diceResult;
     }
@@ -39,14 +35,25 @@ class Game {
     }
 
     shouldCurrentPlayerMoveAutomatically() {
-        return this.currentPlayer.shouldMoveAutomatically(this.diceResult);
+        const pawnId = this.currentPlayer.shouldMoveAutomatically(this.diceResult);
+        if (pawnId) return pawnId;
+    }
+
+    canCurrentPlayerMove() {
+        return this.currentPlayer.freepawns.size > 0;
+    }
+
+    shouldCurrentPlayerRollADiceAudomatically() {
+        return this.currentPlayer.isBot();
     }
 
     collisionDetection(stepIndex) {
         for (let i = 0; i < 4; i++) {
-            if (i != this.activePlayerIndex) {
-                const pawnId = this.players[i].checkIfAnyPawnCanDie(stepIndex);
-                return { playerIndex: i, pawnId };
+            const id = this.playerIds[i];
+            if (id != this.activePlayerId) {
+                const { pawnId, color } = this.players[id].checkIfAnyPawnCanDie(stepIndex) || {};
+                if (pawnId)
+                    return { killedPawnId: pawnId, killedPawnColor: color };
             }
         }
     }
@@ -54,13 +61,14 @@ class Game {
     moveForward(pawnId) {
         // contains all the indexes that the pawn will hop on
         const pathTravelledArray = this.currentPlayer.moveForward(pawnId, this.diceResult);
+        const movedPawnColor = this.currentPlayer.color;
         const lastElement = pathTravelledArray.at(-1);
-        let killedpawnId;
-        if (lastElement != 100)
-            killedPawnDetails = this.collisionDetection(pathTravelledArray.at(-1));
-        if (!(killedpawnId || this.diceResult === 6))
-            this.setNextActivePlayer();
-        return { pathTravelledArray, killedpawnId };
+        if (lastElement != 100) {
+            let { killedPawnId, killedPawnColor } = this.collisionDetection(pathTravelledArray.at(-1)) || {};
+            if (!(killedPawnId || this.diceResult === 6))
+                this.setNextActivePlayer();
+            return { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor };
+        }
     }
 
     endGame() {

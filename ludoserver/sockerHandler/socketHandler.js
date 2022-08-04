@@ -35,14 +35,14 @@ module.exports = (io) => {
             io.to(roomId).emit('rollADiceResult', result);
             const pawnId = gameList[roomId].shouldCurrentPlayerMoveAutomatically();
             if (pawnId) {
-                const [pathTravelledArray, killedPawnId] = gameList[roomId].moveForward(pawnId);
-                socket.emit('movePawn', [pathTravelledArray, killedPawnId]);
+                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = gameList[roomId].moveForward(pawnId);
+                socket.emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
             }
         });
 
         socket.on('pawnSelectedToMoved', (pawnId) => {
-            const [pathTravelledArray, killedPawnId] = gameList[roomId].moveForward(pawnId);
-            socket.to(roomId).emit('movePawn', [pathTravelledArray, killedPawnId]);
+            const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = gameList[roomId].moveForward(pawnId);
+            socket.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor });
         });
     })
 

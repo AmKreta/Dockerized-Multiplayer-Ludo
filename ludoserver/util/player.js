@@ -16,7 +16,7 @@ class Player {
     }
 
     freeAPawn(pawnId) {
-        let id = pawnId || this.lockedPawns.keys[0];
+        let id = pawnId || [...this.lockedPawns.keys()][0];
         this.freepawns.set(id, this.lockedPawns.get(id));
         this.lockedPawns.delete(id);
         this.freepawns.get(id).stepIndex = 0;
@@ -32,28 +32,29 @@ class Player {
     shouldMoveAutomatically(diceResult) {
         // returns id of pawn to move , if it should move automatically
         // else returns null
-        if (this.freepawns.size === 0 && diceResult === 1) return this.lockedPawns.keys()[0];
-        if (this.freepawns.size === 1 && diceResult !== 6) return this.freepawns.keys()[0];
+        if (this.freepawns.size === 0 && diceResult === 6) return [...this.lockedPawns.keys()][0];
+        if (this.freepawns.size === 1 && diceResult !== 6) return [...this.freepawns.keys()][0];
         if (this.isBot) {
             if (diceResult === 6) {
                 const res = getRandomNoBetween(0, 1);
                 return res && this.freepawns.size
-                    ? this.freepawns.keys()[getRandomNoBetween(0, this.freepawns.size - 1)]
-                    : this.lockedPawns.keys()[getRandomNoBetween(0, this.freepawns.size - 1)];
+                    ? [...this.freepawns.keys()][getRandomNoBetween(0, this.freepawns.size - 1)]
+                    : [...this.lockedPawns.keys()][getRandomNoBetween(0, this.freepawns.size - 1)];
             }
-            return this.freepawns.keys()[0];
+            return [...this.freepawns.keys()][0];
         }
         return null;
     }
 
     moveForward(pawnId, steps) {
-        try {
-            if (!this.freepawns[pawnId])
-                throw 'pawnId not found';
-            this.freepawns[pawnId].moveForward(steps);
-        } catch (err) {
-            console.log(err);
+        const pathTravelledArray = [];
+        if (this.freepawns.size === 0) {
+            this.freeAPawn(pawnId);
+            return [this.path[this.freepawns.get(pawnId).stepIndex]];
         }
+        for (let i = 0; i < steps; i++)
+            pathTravelledArray.push(this.path[++this.freepawns.get(pawnId).stepIndex]);
+        return pathTravelledArray;
     }
 
     killPawn(pawnId) {
@@ -63,7 +64,7 @@ class Player {
     }
 
     checkIfAnyPawnCanDie(stepIndex) {
-        this.freepawns.map((pawn, pawnId) => {
+        this.freepawns.forEach((pawn, pawnId) => {
             if (!protectedSteps.has(stepIndex) && pawn.stepIndex === stepIndex) {
                 this.killPawn(pawnId);
                 return pawnId;

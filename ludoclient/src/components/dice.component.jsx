@@ -82,7 +82,7 @@ const Dice = () => {
   const rotate = () => {
     if (!isRotating) {
       setIsRotating(true);
-      //socket.emit("rollADice", roomId);
+      socket.emit("rollADice", roomId);
     }
   };
 

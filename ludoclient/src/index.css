@@ -40,7 +40,27 @@ html,body,#root{
   animation-timing-function: linear;
 }
 
+.blinkAnimation{
+  animation-name: blink;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+}
+
 @keyframes rotate3d {
-  from {transform: rotate3d(0,0,0,0deg)}
-  to {transform: rotate3d(1,1,1,720deg)}
+  from {transform: rotate3d(1,1,1,0deg) rotateZ(0deg)}
+  to {transform: rotate3d(1,1,1,720deg) rotateX(360deg)}
+}
+
+@keyframes blink {
+  from {
+    opacity:.8;
+    box-shadow:0 0 5px currentColor;
+  }
+  to {
+    opacity:1;
+    box-shadow: none;
+  }
 }

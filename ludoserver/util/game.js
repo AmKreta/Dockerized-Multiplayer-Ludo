@@ -15,8 +15,16 @@ class Game {
         this.diceResult = 0;
     }
 
-    setNextActivePlayer(player_Id) {
-        let res = this.playerIds.findIndex(id => id === player_Id);
+    get activeColor() {
+        return this.players[this.activePlayerId].color;
+    }
+
+    afterGameStarts() {
+
+    }
+
+    setNextActivePlayer() {
+        let res = this.playerIds.findIndex(id => id === this.activePlayerId);
         this.activePlayerId = res === 3 ? this.playerIds[0] : this.playerIds[res + 1];
     }
 
@@ -25,7 +33,7 @@ class Game {
     }
 
     rollADice() {
-        const diceResult = 6;//getRandomNoBetween(1, 6);
+        const diceResult = getRandomNoBetween(1, 6);
         this.diceResult = diceResult;
         return diceResult;
     }
@@ -70,6 +78,15 @@ class Game {
             return { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor };
         }
     }
+
+
+    get moveablePawns() {
+        if (this.diceResult === 6)
+            return [...this.currentPlayer.lockedPawns.keys(), ...this.currentPlayer.freepawns.keys()];
+        return [...this.currentPlayer.freepawns.keys()];
+    }
+
+
 
     endGame() {
 

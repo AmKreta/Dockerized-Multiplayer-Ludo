@@ -20,31 +20,47 @@ module.exports = (io) => {
 
         socket.on('startGame', roomId => {
             const membersInRoom = [...(io.sockets.adapter.rooms.get(roomId))];
-            gameList[roomId] = new Game({ playersId: membersInRoom, ctx: { io, socket } });
+            const game = new Game({ playersId: membersInRoom, ctx: { io, socket, roomId } });
+            gameList[roomId] = game;
             const pawnsInfo = {};
-            Object.keys(gameList[roomId].players).forEach(playerId => {
-                const player = gameList[roomId].players[playerId];
+            Object.keys(game.players).forEach(playerId => {
+                const player = game.players[playerId];
                 Object.assign(pawnsInfo, { [player.color]: player.getPawnsInfo() });
             });
-            socket.emit('gameStarted', { pawnsInfo })
+            io.to(roomId).emit('gameStarted', { pawnsInfo, activeColor: game.activeColor });
         });
 
         socket.on('rollADice', (roomId) => {
+            const game = gameList[roomId];
             socket.to(roomId).emit('rollADice');
-            const result = gameList[roomId].rollADice();
+            const result = game.rollADice();
             io.to(roomId).emit('rollADiceResult', result);
-            const pawnId = gameList[roomId].shouldCurrentPlayerMoveAutomatically();
+            const pawnId = game.shouldCurrentPlayerMoveAutomatically();
             if (pawnId) {
-                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = gameList[roomId].moveForward(pawnId);
+                // if current player can move automatically , ie <=1 pawn free
+                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = game.moveForward(pawnId);
                 socket.emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
+                game.setNextActivePlayer();
+                socket.emit('setActiveColor', game.activeColor);
+            }
+            else if (!game.canCurrentPlayerMove()) {
+                // if current player cant move at all
+                game.setNextActivePlayer();
+                socket.emit('setActiveColor', game.activeColor);
+            }
+            else {
+                // player has rolled the dice and has more than one moveable pawns
+                socket.emit('setMoveablePawns', game.moveablePawns);
             }
         });
+
+        socket.on('pawnMoveComplete', () => {
+
+        })
 
         socket.on('pawnSelectedToMoved', (pawnId) => {
             const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = gameList[roomId].moveForward(pawnId);
             socket.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor });
         });
     })
-
-
 }

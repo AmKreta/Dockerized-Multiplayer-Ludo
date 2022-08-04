@@ -34,7 +34,9 @@ const initialState = {
         }
     },
     dieLoced: true,
-    diceTopFace: 6
+    diceTopFace: 6,
+    activeColor: null,
+    moveablePawns: null
 };
 
 export const fetchGameMapDetails = createAsyncThunk('game/fetchGameMapDetails', async () => {
@@ -71,6 +73,16 @@ const game = createSlice({
             const { pawnId, stepIndex, movedPawnColor } = action.payload;
             state.pawns[movedPawnColor][pawnId] = stepIndex;
             return state;
+        },
+        setActiveColor(state, action) {
+            const activeColor = action.payload;
+            state.activeColor = activeColor;
+            return state;
+        },
+        setMoveablePawns(state, action) {
+            const moveablePawns = action.payload;
+            state.moveablePawns = moveablePawns;
+            return state;
         }
     },
     extraReducers: {
@@ -93,6 +105,8 @@ export const {
     setGameRoomId,
     mapHomeCoordinates,
     mapStepsCoordinates,
-    movePawn
+    movePawn,
+    setActiveColor,
+    setMoveablePawns
 } = game.actions;
 export default game.reducer;

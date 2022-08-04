@@ -1,17 +1,47 @@
 import React from "react";
 import LudoBoard from "../components/ludoBoard.component";
 import { styled } from "@mui/material/styles";
-import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Pawn from "../components/pawn.component";
+import useSocket from "../socket/useSocket";
+import {
+  movePawn,
+  setActiveColor,
+  setMoveablePawns,
+} from "../store/game.reducer";
 
 const Game = () => {
-  const params = useParams();
-  const roomId = params["roomId"];
   const pawnsInfo = useSelector((state) => state.game.pawns);
+  const socket = useSocket();
+  const dispatch = useDispatch();
 
-  useEffect(function () {}, [roomId]);
+  useEffect(
+    function () {
+      socket?.on(
+        "movePawn",
+        ({ pawnId, movedPawnColor, pathTravelledArray }) => {
+          let i = 0;
+          const interval = setInterval(function () {
+            let stepIndex = pathTravelledArray[i++];
+            dispatch(movePawn({ pawnId, stepIndex, movedPawnColor }));
+            if (i === pathTravelledArray.length) clearInterval(interval);
+          }, 500);
+        }
+      );
+      socket?.on("setActiveColor", (activeColor) => {
+        dispatch(setActiveColor(activeColor));
+      });
+      socket?.on("setMoveablePawns", (pawnIds) => {
+        dispatch(setMoveablePawns(pawnIds));
+      });
+      return () => {
+        socket?.off("movePawn");
+        socket?.off("setActiveColor");
+      };
+    },
+    [socket]
+  );
 
   return (
     <Container>

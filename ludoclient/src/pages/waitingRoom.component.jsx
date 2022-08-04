@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import useSocket from "../socket/useSocket";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { setInitialPawnsPosition } from "../store/game.reducer";
+import { setActiveColor, setInitialPawnsPosition } from "../store/game.reducer";
 import { ROUTES_OBJ } from "../router/router.component";
 
 const WaitingRoom = () => {
@@ -15,8 +15,9 @@ const WaitingRoom = () => {
 
   useEffect(
     function () {
-      socket?.on("gameStarted", function ({ pawnsInfo }) {
+      socket?.on("gameStarted", function ({ pawnsInfo, activeColor }) {
         dispatch(setInitialPawnsPosition(pawnsInfo));
+        dispatch(setActiveColor(activeColor));
         navigate(ROUTES_OBJ.GAME.getPath(roomId));
       });
       return () => socket?.off("gameStarted");

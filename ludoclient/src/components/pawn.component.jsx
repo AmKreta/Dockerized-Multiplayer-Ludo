@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";

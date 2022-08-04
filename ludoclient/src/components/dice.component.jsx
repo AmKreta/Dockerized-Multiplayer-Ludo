@@ -93,13 +93,27 @@ const Dice = () => {
       className={isRotating ? "rotationAnimation" : null}
       style={{ transformOrigin: `center center -25px` }}
       onClick={rotate}
+      normalView={diceResult !== -1}
     >
-      <Face1 />
-      <Face2 />
-      <Face3 />
-      <Face4 />
-      <Face5 />
-      <Face6 />
+      {diceResult === -1 ? (
+        <>
+          <Face1 />
+          <Face2 />
+          <Face3 />
+          <Face4 />
+          <Face5 />
+          <Face6 />
+        </>
+      ) : (
+        (function () {
+          if (diceResult === 1) return <Face1 />;
+          if (diceResult === 2) return <Face2 />;
+          if (diceResult === 3) return <Face3 />;
+          if (diceResult === 4) return <Face4 />;
+          if (diceResult === 5) return <Face5 />;
+          if (diceResult === 6) return <Face6 />;
+        })()
+      )}
     </Container>
   );
 };
@@ -140,6 +154,7 @@ const Container = styled("div")((props) => ({
   width: props.width,
   position: "relative",
   transformStyle: "preserve-3d",
+  transform: "rotateZ(45deg)",
   "&:hover": { cursor: "pointer" },
   "&>div": {
     height: "100%",
@@ -150,30 +165,30 @@ const Container = styled("div")((props) => ({
     "&:nth-of-type(1)": { position: "relative" },
     "&:nth-of-type(2)": {
       bottom: "100%",
-      transform: "rotateX(90deg)",
+      transform: props.normalView || "rotateX(90deg)",
       transformOrigin: "bottom center",
     },
     "&:nth-of-type(3)": {
       top: 0,
       right: "100%",
-      transform: "rotateY(-90deg)",
+      transform: props.normalView || "rotateY(-90deg)",
       transformOrigin: "center right",
     },
     "&:nth-of-type(4)": {
       top: 0,
       left: "100%",
-      transform: "rotateY(90deg)",
+      transform: props.normalView || "rotateY(90deg)",
       transformOrigin: "center left",
     },
     "&:nth-of-type(5)": {
       top: "100%",
-      transform: "rotateX(-90deg)",
+      transform: props.normalView || "rotateX(-90deg)",
       transformOrigin: "top center",
     },
     "&:nth-of-type(6)": {
       top: 0,
       left: 0,
-      transform: `translateZ(-${props.height})`,
+      transform: props.normalView || `translateZ(-${props.height})`,
     },
     "&.face_1_2_container": {
       display: "flex",

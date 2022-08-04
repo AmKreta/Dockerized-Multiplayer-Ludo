@@ -1,15 +1,14 @@
 import React, { useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { mapHomeCoordinates, movePawn } from "../store/game.reducer";
+import { useDispatch, useSelector } from "react-redux";
+import { mapHomeCoordinates } from "../store/game.reducer";
 import getMidPoint from "../util/getMidPoint";
-import useSocket from "../socket/useSocket";
 
 const LudoBoardHome = ({ color }) => {
   const ref = useRef(null);
   const dispatch = useDispatch();
-  const socket = useSocket();
+  const activeColor = useSelector((state) => state.game.activeColor);
 
   useLayoutEffect(() => {
     const timeout = setTimeout(function () {
@@ -20,20 +19,15 @@ const LudoBoardHome = ({ color }) => {
       dispatch(mapHomeCoordinates({ color, positions: midPointsOfCircles }));
       clearTimeout(timeout);
     }, 10);
-
-    socket?.on("movePawn", ({ pawnId, movedPawnColor, pathTravelledArray }) => {
-      let i = 0;
-      const interval = setInterval(function () {
-        let stepIndex = pathTravelledArray[i++];
-        dispatch(movePawn({ pawnId, stepIndex, movedPawnColor }));
-        if (i === pathTravelledArray.length) clearInterval(interval);
-      }, 500);
-    });
-    return () => socket?.off("movePawn");
   }, []);
 
   return (
-    <Container color={color} data-color={color} ref={ref}>
+    <Container
+      color={color}
+      data-color={color}
+      ref={ref}
+      className={activeColor === color ? "blinkAnimation" : null}
+    >
       <div className="pawnContainerHome">
         <div className="pawnContainer"></div>
         <div className="pawnContainer"></div>

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useSelector } from "react-redux";
 
-const Pawn = ({ color, id, stepIndex }) => {
+const Pawn = ({ color, id, stepIndex, moveable, onClick }) => {
   const stepsPositionMap = useSelector(
     (state) => state.game.positionMap.steps[stepIndex]
   );
@@ -17,8 +17,11 @@ const Pawn = ({ color, id, stepIndex }) => {
       position={stepIndex === -1 ? homePositionCoordinates : stepsPositionMap}
       color={color}
       layout
+      onClick={onClick}
+      data-id={id}
     >
       <LocationOnIcon id={id} className="icon" />
+      {moveable ? <Ring /> : null}
     </PawnContainer>
   );
 };
@@ -37,6 +40,17 @@ const PawnContainer = styled(motion.div)((props) => ({
       props.color === "yellow" ? "#000" : "#fff"
     });`,
   },
+}));
+
+const Ring = styled(motion.div)((props) => ({
+  height: "30px",
+  width: "30px",
+  border: "4px solid #333",
+  borderRadius: "50%",
+  position: "absolute",
+  top: "-5%",
+  left: "-38%",
+  transform: "rotateX(70deg)",
 }));
 
 export default Pawn;

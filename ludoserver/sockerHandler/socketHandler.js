@@ -39,18 +39,17 @@ module.exports = (io) => {
             if (pawnId) {
                 // if current player can move automatically , ie <=1 pawn free
                 const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = game.moveForward(pawnId);
-                socket.emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
+                io.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
                 game.setNextActivePlayer();
-                socket.emit('setActiveColor', game.activeColor);
+                io.to(roomId).emit('setActiveColor', game.activeColor);
             }
             else if (!game.canCurrentPlayerMove()) {
                 // if current player cant move at all
-                game.setNextActivePlayer();
-                socket.emit('setActiveColor', game.activeColor);
+                io.to(roomId).emit('setActiveColor', game.activeColor);
             }
             else {
                 // player has rolled the dice and has more than one moveable pawns
-                socket.emit('setMoveablePawns', game.moveablePawns);
+                io.to(roomId).emit('setMoveablePawns', game.moveablePawns);
             }
         });
 
@@ -58,9 +57,14 @@ module.exports = (io) => {
 
         })
 
-        socket.on('pawnSelectedToMoved', (pawnId) => {
-            const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = gameList[roomId].moveForward(pawnId);
-            socket.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor });
+        socket.on('selectedPawnToMove', ({ roomId, pawnId }) => {
+            const game = gameList[roomId];
+            if (game.isSelectedPawnToMoveValid) {
+                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = game.moveForward(pawnId);
+                io.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
+                game.setNextActivePlayer();
+                io.to(roomId).emit('setActiveColor', game.activeColor);
+            }
         });
     })
 }

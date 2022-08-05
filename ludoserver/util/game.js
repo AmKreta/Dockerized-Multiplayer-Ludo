@@ -2,6 +2,8 @@ const generateId = require("./generateId");
 const getRandomNoBetween = require("./getRandomNoBetween");
 const Player = require("./player");
 
+const d = [6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1];
+let x = 0;
 class Game {
     constructor({ playersId = [], ctx }) {
         this.players = {
@@ -13,6 +15,7 @@ class Game {
         this.playerIds = Object.keys(this.players);
         this.activePlayerId = playersId[0];
         this.diceResult = 0;
+        this.killedByCurrentPlayer = null;
     }
 
     get activeColor() {
@@ -24,8 +27,12 @@ class Game {
     }
 
     setNextActivePlayer() {
-        let res = this.playerIds.findIndex(id => id === this.activePlayerId);
-        this.activePlayerId = res === 3 ? this.playerIds[0] : this.playerIds[res + 1];
+        if (!(this.killedByCurrentPlayer || this.diceResult === 6)) {
+            // only update if no player got killed when player moved,
+            // and he didn't got 6
+            let res = this.playerIds.findIndex(id => id === this.activePlayerId);
+            this.activePlayerId = res === 3 ? this.playerIds[0] : this.playerIds[res + 1];
+        }
     }
 
     get currentPlayer() {
@@ -33,7 +40,7 @@ class Game {
     }
 
     rollADice() {
-        const diceResult = getRandomNoBetween(1, 6);
+        const diceResult = x < d.length ? d[x++] : getRandomNoBetween(1, 6);
         this.diceResult = diceResult;
         return diceResult;
     }
@@ -48,7 +55,9 @@ class Game {
     }
 
     canCurrentPlayerMove() {
-        return this.currentPlayer.freepawns.size > 0;
+        const res = this.currentPlayer.freepawns.size > 0 || this.diceResult === 6;
+        res || this.setNextActivePlayer();
+        return res;
     }
 
     shouldCurrentPlayerRollADiceAudomatically() {
@@ -73,8 +82,8 @@ class Game {
         const lastElement = pathTravelledArray.at(-1);
         if (lastElement != 100) {
             let { killedPawnId, killedPawnColor } = this.collisionDetection(pathTravelledArray.at(-1)) || {};
-            if (!(killedPawnId || this.diceResult === 6))
-                this.setNextActivePlayer();
+            if (killedPawnId)
+                this.killedByCurrentPlayer = killedPawnId;
             return { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor };
         }
     }
@@ -87,6 +96,9 @@ class Game {
     }
 
 
+    isSelectedPawnToMoveValid(pawnId) {
+        return this.currentPlayer.freepawns.has(pawnId) || this.currentPlayer.lockedPawns.has(pawnId);
+    }
 
     endGame() {
 

@@ -81,7 +81,7 @@ const game = createSlice({
         },
         setMoveablePawns(state, action) {
             const moveablePawns = action.payload;
-            state.moveablePawns = moveablePawns;
+            state.moveablePawns = new Set(moveablePawns);
             return state;
         }
     },

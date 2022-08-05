@@ -10,11 +10,14 @@ import {
   setActiveColor,
   setMoveablePawns,
 } from "../store/game.reducer";
+import { useParams } from "react-router-dom";
 
 const Game = () => {
   const pawnsInfo = useSelector((state) => state.game.pawns);
   const socket = useSocket();
   const dispatch = useDispatch();
+  const moveablePawns = useSelector((state) => state.game.moveablePawns);
+  const { roomId } = useParams();
 
   useEffect(
     function () {
@@ -43,18 +46,28 @@ const Game = () => {
     [socket]
   );
 
+  const onPawnClick = (e) => {
+    const clickedPawnId = e.currentTarget.dataset["id"];
+    socket.emit("selectedPawnToMove", { pawnId: clickedPawnId, roomId });
+  };
+
   return (
     <Container>
       <LudoBoard />
       {Object.keys(pawnsInfo).map((pawnColor) =>
-        Object.keys(pawnsInfo[pawnColor]).map((pawnId) => (
-          <Pawn
-            color={pawnColor}
-            id={pawnId}
-            key={pawnId}
-            stepIndex={pawnsInfo[pawnColor][pawnId]}
-          />
-        ))
+        Object.keys(pawnsInfo[pawnColor]).map((pawnId) => {
+          const isMoveable = moveablePawns?.has && moveablePawns.has(pawnId);
+          return (
+            <Pawn
+              color={pawnColor}
+              id={pawnId}
+              key={pawnId}
+              stepIndex={pawnsInfo[pawnColor][pawnId]}
+              moveable={isMoveable}
+              onClick={isMoveable ? onPawnClick : null}
+            />
+          );
+        })
       )}
       <Tester>tester</Tester>
     </Container>

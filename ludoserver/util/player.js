@@ -2,7 +2,6 @@ const { pawnPath, protectedSteps } = require("./gameMapInfo");
 const generateId = require("./generateId");
 const getRandomNoBetween = require("./getRandomNoBetween");
 const Pawn = require("./pawn");
-
 class Player {
     constructor(color, isBot) {
         this.color = color;
@@ -48,7 +47,7 @@ class Player {
 
     moveForward(pawnId, steps) {
         const pathTravelledArray = [];
-        if (this.freepawns.size === 0) {
+        if (!this.freepawns.get(pawnId)) {
             this.freeAPawn(pawnId);
             return [this.path[this.freepawns.get(pawnId).stepIndex]];
         }
@@ -59,7 +58,7 @@ class Player {
 
     killPawn(pawnId) {
         this.freepawns.get(pawnId).stepIndex = -1;
-        this.lockedPawns.set(pawnId, this.this.freepawns.get(pawnId));
+        this.lockedPawns.set(pawnId, this.freepawns.get(pawnId));
         this.freepawns.delete(pawnId);
     }
 

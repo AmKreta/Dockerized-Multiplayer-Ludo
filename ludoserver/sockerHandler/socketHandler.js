@@ -1,7 +1,8 @@
 const Game = require('../util/game');
 const generateId = require('../util/generateId');
+const ludoEngine = require('../util/ludoEngine');
 
-const gameList = {};
+const gamePlayList = {};
 
 module.exports = (io) => {
     io.on('connection', socket => {
@@ -12,7 +13,6 @@ module.exports = (io) => {
         });
 
         socket.on('createRoom', () => {
-            console.log('createRoom')
             const newRoomId = generateId();
             socket.join(newRoomId);
             socket.emit('roomCreated', newRoomId);
@@ -20,37 +20,12 @@ module.exports = (io) => {
 
         socket.on('startGame', roomId => {
             const membersInRoom = [...(io.sockets.adapter.rooms.get(roomId))];
-            const game = new Game({ playersId: membersInRoom, ctx: { io, socket, roomId } });
-            gameList[roomId] = game;
-            const pawnsInfo = {};
-            Object.keys(game.players).forEach(playerId => {
-                const player = game.players[playerId];
-                Object.assign(pawnsInfo, { [player.color]: player.getPawnsInfo() });
-            });
-            io.to(roomId).emit('gameStarted', { pawnsInfo, activeColor: game.activeColor });
+            gamePlayList[roomId]=new ludoEngine(membersInRoom,roomId,{ io, socket });
         });
 
         socket.on('rollADice', (roomId) => {
-            const game = gameList[roomId];
-            socket.to(roomId).emit('rollADice');
-            const result = game.rollADice();
-            io.to(roomId).emit('rollADiceResult', result);
-            const pawnId = game.shouldCurrentPlayerMoveAutomatically();
-            if (pawnId) {
-                // if current player can move automatically , ie <=1 pawn free
-                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = game.moveForward(pawnId);
-                io.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
-                game.setNextActivePlayer();
-                io.to(roomId).emit('setActiveColor', game.activeColor);
-            }
-            else if (!game.canCurrentPlayerMove()) {
-                // if current player cant move at all
-                io.to(roomId).emit('setActiveColor', game.activeColor);
-            }
-            else {
-                // player has rolled the dice and has more than one moveable pawns
-                io.to(roomId).emit('setMoveablePawns', game.moveablePawns);
-            }
+            const gamePlay = gamePlayList[roomId];
+            gamePlay.rollADice();
         });
 
         socket.on('pawnMoveComplete', () => {
@@ -58,13 +33,8 @@ module.exports = (io) => {
         })
 
         socket.on('selectedPawnToMove', ({ roomId, pawnId }) => {
-            const game = gameList[roomId];
-            if (game.isSelectedPawnToMoveValid) {
-                const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = game.moveForward(pawnId);
-                io.to(roomId).emit('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
-                game.setNextActivePlayer();
-                io.to(roomId).emit('setActiveColor', game.activeColor);
-            }
+            const gamePlay = gamePlayList[roomId];
+            gamePlay. moveSelectedPawn(pawnId);
         });
     })
 }

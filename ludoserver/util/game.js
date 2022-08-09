@@ -22,10 +22,6 @@ class Game {
         return this.players[this.activePlayerId].color;
     }
 
-    afterGameStarts() {
-
-    }
-
     setNextActivePlayer() {
         if (!(this.killedByCurrentPlayer || this.diceResult === 6)) {
             // only update if no player got killed when player moved,

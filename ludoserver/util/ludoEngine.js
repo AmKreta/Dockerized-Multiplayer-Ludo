@@ -17,6 +17,21 @@ class ludoEngine {
         this.io.to(this.roomId).emit(eventName, data);
     }
 
+    autoDiceRoll(){
+        const timeout=setTimeout(()=>{
+            this.rollADice();
+            clearTimeout(timeout);
+        },1000);
+    }
+
+    onPlayerAllTurnsCompleted(){
+        // call this function if current player has exhausted all his chances
+        this.game.setNextActivePlayer();
+        this.emitInRoom('setActiveColor', this.game.activeColor);
+        if(this.game.shouldCurrentPlayerRollADiceAudomatically())
+            this.autoDiceRoll();
+    }
+
     onInit() {
         const pawnsInfo = {};
         Object.keys(this.game.players).forEach(playerId => {
@@ -34,11 +49,9 @@ class ludoEngine {
         const pawnId = game.shouldCurrentPlayerMoveAutomatically();
         if (pawnId) {
             // if current player should move automatically , ie <=1 pawn free
-            this.moveAPawn(pawnId);
-        }
-        else if (!game.canCurrentPlayerMove()) {
-            // if current player cant move at all
-            this.emitInRoom('setActiveColor', game.activeColor);
+            // or current player is bot
+            this.emitInRoom('setMoveablePawns', game.moveablePawns);
+            this.moveSelectedPawn(pawnId);
         }
         else {
             // player has rolled the dice and has more than one moveable pawns
@@ -49,12 +62,11 @@ class ludoEngine {
     moveAPawn(pawnId) {
         const { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor } = this.game.moveForward(pawnId);
         this.emitInRoom('movePawn', { pathTravelledArray, killedPawnId, killedPawnColor, movedPawnColor, pawnId });
-        if(this.game.isCurrentPlayerBot){
-            const timeout=setTimeout(()=>{
-                this.onPawnMoveComplete();
-                clearTimeout(timeout);
-            },pathTravelledArray.length*750);
-        }
+        // todo:- call this automatically only for bots
+        const timeout=setTimeout(()=>{
+            this.onPawnMoveComplete();
+            clearTimeout(timeout);
+        },pathTravelledArray.length*750);
     }
 
     moveSelectedPawn(pawnId){
@@ -63,10 +75,13 @@ class ludoEngine {
     }
 
     onPawnMoveComplete() {
-        this.game.setNextActivePlayer();
-        this.emitInRoom('setActiveColor', this.game.activeColor);
-        if(this.game.isCurrentPlayerBot)
-            this.rollADice();
+        // if player killed other pawn or last dice result is 6,
+        // dont update active player
+        if(this.game.diceResult!==6){
+           this.onPlayerAllTurnsCompleted();
+        }
+        else if(this.game.shouldCurrentPlayerRollADiceAudomatically())
+            this.autoDiceRoll();
     }
 }
 

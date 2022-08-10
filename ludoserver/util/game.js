@@ -5,12 +5,12 @@ const Player = require("./player");
 const d = [6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1];
 let x = 0;
 class Game {
-    constructor({ playersId = [], ctx }) {
+    constructor({ playersId = []}) {
         this.players = {
-            [playersId[0]]: new Player('red'),
-            [playersId[1] || generateId()]: new Player('green', !!playersId[1]),
-            [playersId[2] || generateId()]: new Player('yellow', !!playersId[2]),
-            [playersId[3] || generateId()]: new Player('blue', !!playersId[3]),
+            [playersId[0]]: new Player('red',!playersId[0]),
+            [playersId[1] || generateId()]: new Player('green', !playersId[1]),
+            [playersId[2] || generateId()]: new Player('yellow', !playersId[2]),
+            [playersId[3] || generateId()]: new Player('blue', !playersId[3]),
         };
         this.playerIds = Object.keys(this.players);
         this.activePlayerId = playersId[0];
@@ -52,12 +52,11 @@ class Game {
 
     canCurrentPlayerMove() {
         const res = this.currentPlayer.freepawns.size > 0 || this.diceResult === 6;
-        res || this.setNextActivePlayer();
         return res;
     }
 
     shouldCurrentPlayerRollADiceAudomatically() {
-        return this.currentPlayer.isBot();
+        return this.currentPlayer.isBot;
     }
 
     collisionDetection(stepIndex) {

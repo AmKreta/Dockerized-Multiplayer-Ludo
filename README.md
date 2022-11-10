@@ -17,3 +17,10 @@ myltiplayer ludo game made using docker
 - on frontend , created path travelling algorithm for pawns to move.
 - created a dice using CSS 3D, and animated it.
 - created a luso board using flexbox and grid.
+
+
+## How to build :-
+
+ - install docker and docker-compose (see docs)
+ - go to root directory
+ - run docker-compose up

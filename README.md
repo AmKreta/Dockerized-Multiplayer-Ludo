@@ -14,7 +14,7 @@
 - Added bots also , bot can play by themselve and decide their actions based on random function
 - on frontend , created path travelling algorithm for pawns to move.
 - created a dice using CSS 3D, and animated it.
-- created a luso board using flexbox and grid.
+- created a ludo board using flexbox and grid.
 
 
 ## How to build :-
